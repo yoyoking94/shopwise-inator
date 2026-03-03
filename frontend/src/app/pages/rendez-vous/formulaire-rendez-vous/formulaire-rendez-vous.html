@@ -1,0 +1,59 @@
+<mat-card class="carte-formulaire">
+  <mat-card-header>
+    <mat-card-title>Nouveau rendez-vous</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="formulaireRendezVous" (ngSubmit)="soumettre()" class="formulaire">
+      <mat-form-field appearance="outline" class="champ-formulaire">
+        <mat-label>Client</mat-label>
+        <mat-select formControlName="clientId">
+          @for (client of listeClients; track client.id) {
+            <mat-option [value]="client.id">{{ client.nom }}</mat-option>
+          }
+        </mat-select>
+        @if (formulaireRendezVous.get('clientId')?.hasError('required')) {
+          <mat-error>Le client est obligatoire</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="champ-formulaire">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="selecteurDate" formControlName="dateRendezVous" />
+        <mat-datepicker-toggle matIconSuffix [for]="selecteurDate" />
+        <mat-datepicker #selecteurDate />
+        @if (formulaireRendezVous.get('dateRendezVous')?.hasError('required')) {
+          <mat-error>La date est obligatoire</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="champ-formulaire">
+        <mat-label>Heure (HH:mm:ss)</mat-label>
+        <input matInput formControlName="heureRendezVous" placeholder="Ex : 10:00:00" />
+        @if (formulaireRendezVous.get('heureRendezVous')?.hasError('required')) {
+          <mat-error>L'heure est obligatoire</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="champ-formulaire">
+        <mat-label>Service</mat-label>
+        <input matInput formControlName="service" placeholder="Ex : Coupe cheveux" />
+        @if (formulaireRendezVous.get('service')?.hasError('required')) {
+          <mat-error>Le service est obligatoire</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="boutons-formulaire">
+        <button mat-button type="button" (click)="annuler()">Annuler</button>
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="formulaireRendezVous.invalid"
+        >
+          Créer
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
