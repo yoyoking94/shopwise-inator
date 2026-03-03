@@ -24,29 +24,29 @@ public class FidelisationService {
 
     public void attribuerPoints(RendezVous rendezVous) {
         PointsFidelite pointsFidelite = pointsFideliteRepository
-                .findByClientId(rendezVous.getClient().getId())
+                .findByUtilisateurId(rendezVous.getUtilisateur().getId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Points fidélité introuvables pour le client : " + rendezVous.getClient().getId()));
+                        "Points introuvables pour l'utilisateur : " + rendezVous.getUtilisateur().getId()));
 
         pointsFidelite.setSoldePoints(pointsFidelite.getSoldePoints() + POINTS_PAR_RENDEZ_VOUS);
         pointsFideliteRepository.save(pointsFidelite);
 
         TransactionFidelite transaction = new TransactionFidelite();
-        transaction.setClient(rendezVous.getClient());
+        transaction.setUtilisateur(rendezVous.getUtilisateur());
         transaction.setRendezVous(rendezVous);
         transaction.setPointsAttribues(POINTS_PAR_RENDEZ_VOUS);
         transactionFideliteRepository.save(transaction);
     }
 
     public Integer recupererSoldePoints(Integer clientId) {
-        return pointsFideliteRepository.findByClientId(clientId)
+        return pointsFideliteRepository.findByUtilisateurId(clientId)
                 .orElseThrow(
                         () -> new EntityNotFoundException("Points fidélité introuvables pour le client : " + clientId))
                 .getSoldePoints();
     }
 
     public List<TransactionFideliteDTO> recupererHistoriqueTransactions(Integer clientId) {
-        return transactionFideliteRepository.findByClientId(clientId)
+        return transactionFideliteRepository.findByUtilisateurId(clientId)
                 .stream()
                 .map(transactionFideliteMapper::versDTO)
                 .toList();

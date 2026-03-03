@@ -6,28 +6,28 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { ClientService } from '../../../core/services/client.service';
+import { UtilisateurService } from '../../../core/services/utilisateur.service';
 
 @Component({
   selector: 'app-formulaire-client',
   imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule],
-  templateUrl: './formulaire-client.html',
-  styleUrl: './formulaire-client.scss',
+  templateUrl: './formulaire-utilisateur.html',
+  styleUrl: './formulaire-utilisateur.scss',
 })
-export class FormulaireClient implements OnInit {
-  formulaireClient!: FormGroup;
+export class FormulaireUtilisateur implements OnInit {
+  formulaireUtilisateur!: FormGroup;
   estEnModeModification = false;
   clientId!: number;
 
   constructor(
     private formBuilder: FormBuilder,
-    private clientService: ClientService,
+    private utilisateurService: UtilisateurService,
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this.formulaireClient = this.formBuilder.group({
+    this.formulaireUtilisateur = this.formBuilder.group({
       nom: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       telephone: ['']
@@ -36,21 +36,21 @@ export class FormulaireClient implements OnInit {
     this.clientId = this.activatedRoute.snapshot.params['id'];
     if (this.clientId) {
       this.estEnModeModification = true;
-      this.clientService.recupererClientParId(this.clientId).subscribe(client => {
-        this.formulaireClient.patchValue(client);
+      this.utilisateurService.recupererUtilisateurParId(this.clientId).subscribe(utilisateur => {
+        this.formulaireUtilisateur.patchValue(utilisateur);
       });
     }
   }
 
   soumettre(): void {
-    if (this.formulaireClient.invalid) return;
+    if (this.formulaireUtilisateur.invalid) return;
 
     if (this.estEnModeModification) {
-      this.clientService.mettreAJourClient(this.clientId, this.formulaireClient.value).subscribe(() => {
+      this.utilisateurService.mettreAJourClient(this.clientId, this.formulaireUtilisateur.value).subscribe(() => {
         this.router.navigate(['/clients']);
       });
     } else {
-      this.clientService.creerClient(this.formulaireClient.value).subscribe(() => {
+      this.utilisateurService.creerClient(this.formulaireUtilisateur.value).subscribe(() => {
         this.router.navigate(['/clients']);
       });
     }

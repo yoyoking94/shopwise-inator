@@ -42,7 +42,7 @@ public class RendezVousService {
     }
 
     public List<RendezVousDTO> filtrerParClient(Integer clientId) {
-        return rendezVousRepository.findByClientId(clientId)
+        return rendezVousRepository.findByUtilisateurId(clientId)
                 .stream()
                 .map(rendezVousMapper::versDTO)
                 .toList();
@@ -61,7 +61,6 @@ public class RendezVousService {
         rendezVous.setStatut(statutEnum);
         RendezVous rendezVousSauvegarde = rendezVousRepository.save(rendezVous);
 
-        // Attribution automatique de points si le RDV est honoré
         if (statutEnum == StatutRendezVous.HONORE) {
             fidelisationService.attribuerPoints(rendezVousSauvegarde);
         }

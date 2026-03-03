@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TransactionFideliteRepository extends JpaRepository<TransactionFidelite, Integer> {
-    List<TransactionFidelite> findByClientId(Integer clientId);
+    List<TransactionFidelite> findByUtilisateurId(Integer utilisateurId);
 }

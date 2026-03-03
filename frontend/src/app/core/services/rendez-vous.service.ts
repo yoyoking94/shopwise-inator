@@ -16,6 +16,12 @@ export class RendezVousService {
     return this.httpClient.get<RendezVous[]>(this.urlApi);
   }
 
+  filtrerParDate(date: string): Observable<RendezVous[]> {
+    const parametres = new HttpParams().set('date', date);
+    return this.httpClient.get<RendezVous[]>(this.urlApi, { params: parametres });
+  }
+
+
   filtrerParStatut(statut: string): Observable<RendezVous[]> {
     const parametres = new HttpParams().set('statut', statut);
     return this.httpClient.get<RendezVous[]>(this.urlApi, { params: parametres });

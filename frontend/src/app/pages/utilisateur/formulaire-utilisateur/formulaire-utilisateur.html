@@ -6,11 +6,11 @@
   </mat-card-header>
 
   <mat-card-content>
-    <form [formGroup]="formulaireClient" (ngSubmit)="soumettre()" class="formulaire">
+    <form [formGroup]="formulaireUtilisateur" (ngSubmit)="soumettre()" class="formulaire">
       <mat-form-field appearance="outline" class="champ-formulaire">
         <mat-label>Nom</mat-label>
         <input matInput formControlName="nom" placeholder="Ex : Alice Martin" />
-        @if (formulaireClient.get('nom')?.hasError('required')) {
+        @if (formulaireUtilisateur.get('nom')?.hasError('required')) {
           <mat-error>Le nom est obligatoire</mat-error>
         }
       </mat-form-field>
@@ -18,10 +18,10 @@
       <mat-form-field appearance="outline" class="champ-formulaire">
         <mat-label>Email</mat-label>
         <input matInput formControlName="email" type="email" placeholder="Ex : alice@email.com" />
-        @if (formulaireClient.get('email')?.hasError('required')) {
+        @if (formulaireUtilisateur.get('email')?.hasError('required')) {
           <mat-error>L'email est obligatoire</mat-error>
         }
-        @if (formulaireClient.get('email')?.hasError('email')) {
+        @if (formulaireUtilisateur.get('email')?.hasError('email')) {
           <mat-error>L'email n'est pas valide</mat-error>
         }
       </mat-form-field>
@@ -37,7 +37,7 @@
           mat-raised-button
           color="primary"
           type="submit"
-          [disabled]="formulaireClient.invalid"
+          [disabled]="formulaireUtilisateur.invalid"
         >
           {{ estEnModeModification ? 'Modifier' : 'Créer' }}
         </button>

@@ -42,6 +42,13 @@ CREATE TABLE transaction_fidelite (
     FOREIGN KEY (rendez_vous_id) REFERENCES rendez_vous(id)
 );
 
+-- Table commercant
+CREATE TABLE commercant (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE
+);
+
 -- Données de test
 INSERT INTO client (nom, email, telephone, mot_de_passe) VALUES
 ('Alice Martin','alice@email.com','0601020304','motdepasse123'),
@@ -60,3 +67,5 @@ INSERT INTO points_fidelite (client_id, solde_points) VALUES
 
 INSERT INTO transaction_fidelite (client_id, rendez_vous_id, points_attribues) VALUES
 (1, 1, 10);
+
+INSERT INTO commercant (nom, email) VALUES ('Marie Dupont', 'marie@shopwise.com');

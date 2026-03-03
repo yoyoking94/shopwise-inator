@@ -14,8 +14,8 @@ public class TransactionFidelite {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    @JoinColumn(name = "utilisateur_id", nullable = false)
+    private Utilisateur utilisateur;
 
     @ManyToOne
     @JoinColumn(name = "rendez_vous_id", nullable = false)

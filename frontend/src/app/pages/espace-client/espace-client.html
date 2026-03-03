@@ -1,0 +1,62 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Bonjour, {{ utilisateur?.nom }} 👋</mat-card-title>
+    <mat-card-subtitle>Votre espace client</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Informations personnelles -->
+    <h3>Mes informations</h3>
+    <div class="informations-personnelles">
+      <div class="ligne-information">
+        <mat-icon>person</mat-icon>
+        <span>{{ utilisateur?.nom }}</span>
+      </div>
+      <div class="ligne-information">
+        <mat-icon>email</mat-icon>
+        <span>{{ utilisateur?.email }}</span>
+      </div>
+      @if (utilisateur?.telephone) {
+        <div class="ligne-information">
+          <mat-icon>phone</mat-icon>
+          <span>{{ utilisateur?.telephone }}</span>
+        </div>
+      }
+    </div>
+
+    <mat-divider class="separateur" />
+
+    <!-- Solde de points -->
+    <h3>Mes points de fidélité</h3>
+    <div class="solde-points">
+      <mat-icon>stars</mat-icon>
+      <span class="valeur-solde">{{ soldePoints }} points</span>
+    </div>
+
+    <mat-divider class="separateur" />
+
+    <!-- Historique -->
+    <h3>Historique de mes points</h3>
+
+    @if (historiqueTransactions.length === 0) {
+      <p>Aucune transaction pour le moment.</p>
+    } @else {
+      <table mat-table [dataSource]="historiqueTransactions" class="tableau-transactions">
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let transaction">
+            {{ transaction.dateTransaction | date: 'dd/MM/yyyy HH:mm' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="points">
+          <th mat-header-cell *matHeaderCellDef>Points attribués</th>
+          <td mat-cell *matCellDef="let transaction">+{{ transaction.pointsAttribues }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colonnesAffichees"></tr>
+        <tr mat-row *matRowDef="let row; columns: colonnesAffichees"></tr>
+      </table>
+    }
+  </mat-card-content>
+</mat-card>

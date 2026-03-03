@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface TransactionFideliteMapper {
 
-    @Mapping(source = "client.id", target = "clientId")
+    @Mapping(source = "utilisateur.id", target = "clientId")
     @Mapping(source = "rendezVous.id", target = "rendezVousId")
     TransactionFideliteDTO versDTO(TransactionFidelite transactionFidelite);
 }

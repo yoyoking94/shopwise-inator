@@ -9,7 +9,9 @@
         <mat-icon>add</mat-icon>
         Nouveau rendez-vous
       </button>
+    </div>
 
+    <div class="barre-filtres">
       <mat-form-field appearance="outline">
         <mat-label>Filtrer par statut</mat-label>
         <mat-select [(ngModel)]="filtreStatut" (ngModelChange)="chargerRendezVous()">
@@ -19,6 +21,31 @@
           <mat-option value="ANNULE">Annulé</mat-option>
         </mat-select>
       </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Filtrer par date</mat-label>
+        <input
+          matInput
+          type="date"
+          [(ngModel)]="filtreDate"
+          (ngModelChange)="chargerRendezVous()"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Filtrer par client</mat-label>
+        <mat-select [(ngModel)]="filtreClientId" (ngModelChange)="chargerRendezVous()">
+          <mat-option value="">Tous</mat-option>
+          @for (client of listeClients; track client.id) {
+            <mat-option [value]="client.id">{{ client.nom }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-button (click)="reinitialiserFiltres()">
+        <mat-icon>clear</mat-icon>
+        Réinitialiser
+      </button>
     </div>
 
     <table mat-table [dataSource]="listeRendezVous" class="tableau-rendez-vous">
