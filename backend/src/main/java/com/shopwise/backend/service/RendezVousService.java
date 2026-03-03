@@ -17,6 +17,7 @@ public class RendezVousService {
 
     private final RendezVousRepository rendezVousRepository;
     private final RendezVousMapper rendezVousMapper;
+    private final FidelisationService fidelisationService;
 
     public List<RendezVousDTO> recupererTousLesRendezVous() {
         return rendezVousRepository.findAll()
@@ -59,6 +60,11 @@ public class RendezVousService {
         StatutRendezVous statutEnum = StatutRendezVous.valueOf(nouveauStatut.toUpperCase());
         rendezVous.setStatut(statutEnum);
         RendezVous rendezVousSauvegarde = rendezVousRepository.save(rendezVous);
+
+        // Attribution automatique de points si le RDV est honoré
+        if (statutEnum == StatutRendezVous.HONORE) {
+            fidelisationService.attribuerPoints(rendezVousSauvegarde);
+        }
 
         return rendezVousMapper.versDTO(rendezVousSauvegarde);
     }

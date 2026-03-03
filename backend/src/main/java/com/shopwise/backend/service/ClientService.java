@@ -2,8 +2,10 @@ package com.shopwise.backend.service;
 
 import com.shopwise.backend.dto.ClientDTO;
 import com.shopwise.backend.entities.Client;
+import com.shopwise.backend.entities.PointsFidelite;
 import com.shopwise.backend.mapper.ClientMapper;
 import com.shopwise.backend.repository.ClientRepository;
+import com.shopwise.backend.repository.PointsFideliteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import java.util.List;
 public class ClientService {
 
     private final ClientRepository clientRepository;
+    private final PointsFideliteRepository pointsFideliteRepository;
     private final ClientMapper clientMapper;
 
     public List<ClientDTO> recupererTousLesClients() {
@@ -32,6 +35,11 @@ public class ClientService {
     public ClientDTO creerClient(ClientDTO clientDTO) {
         Client client = clientMapper.versEntiteDepuisDTO(clientDTO);
         Client clientSauvegarde = clientRepository.save(client);
+
+        PointsFidelite pointsFidelite = new PointsFidelite();
+        pointsFidelite.setClient(clientSauvegarde);
+        pointsFidelite.setSoldePoints(0);
+        pointsFideliteRepository.save(pointsFidelite);
 
         return clientMapper.versDTO(clientSauvegarde);
     }
