@@ -13,8 +13,8 @@ public class PointsFidelite {
     private Integer id;
 
     @OneToOne
-    @JoinColumn(name = "client_id", nullable = false, unique = true)
-    private Client client;
+    @JoinColumn(name = "utilisateur_id", nullable = false, unique = true)
+    private Utilisateur utilisateur;
 
     @Column(name = "solde_points", nullable = false)
     private Integer soldePoints = 0;

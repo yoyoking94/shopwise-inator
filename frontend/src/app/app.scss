@@ -1,14 +1,71 @@
 .navigation {
-    margin-left: 2rem;
-  }
-  
-  .lien-actif {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-  }
-  
+  margin-left: 2rem;
+}
+
+.lien-actif {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.contenu-principal {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Responsive global */
+* {
+  box-sizing: border-box;
+}
+
+/* Desktop */
+mat-card {
+  margin-bottom: 1.5rem;
+}
+
+/* Tablette et mobile (moins de 768px) */
+@media (max-width: 768px) {
   .contenu-principal {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 1rem !important;
   }
+
+  /* Les tableaux deviennent scrollables sur mobile */
+  mat-card-content {
+    overflow-x: auto;
+  }
+
+  /* Les barres de filtres passent en colonne */
+  .barre-filtres {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  /* Les formulaires prennent toute la largeur */
+  .carte-formulaire {
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Les boutons de formulaire s'empilent */
+  .boutons-formulaire {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  /* La toolbar passe en colonne */
+  mat-toolbar {
+    flex-wrap: wrap;
+    height: auto !important;
+    padding: 0.5rem !important;
+  }
+
+  .navigation {
+    margin-left: 0 !important;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+  }
+}

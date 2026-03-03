@@ -9,9 +9,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { ClientService } from '../../../core/services/client.service';
+import { UtilisateurService } from '../../../core/services/utilisateur.service';
 import { RendezVousService } from '../../../core/services/rendez-vous.service';
-import { Client } from '../../../model/client.model';
+import { Utilisateur } from '../../../model/utilisateur.model';
 
 @Component({
   selector: 'app-formulaire-rendez-vous',
@@ -21,11 +21,11 @@ import { Client } from '../../../model/client.model';
 })
 export class FormulaireRendezVous implements OnInit {
   formulaireRendezVous!: FormGroup;
-  listeClients: Client[] = [];
+  listeClients: Utilisateur[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
-    private clientService: ClientService,
+    private utilisateurService: UtilisateurService,
     private rendezVousService: RendezVousService,
     private router: Router
   ) { }
@@ -38,8 +38,8 @@ export class FormulaireRendezVous implements OnInit {
       service: ['', Validators.required]
     });
 
-    this.clientService.recupererTousLesClients().subscribe(clients => {
-      this.listeClients = clients;
+    this.utilisateurService.recupererTousLesClients().subscribe(utilisateur => {
+      this.listeClients = utilisateur;
     });
   }
 

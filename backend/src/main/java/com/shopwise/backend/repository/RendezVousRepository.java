@@ -11,5 +11,5 @@ public interface RendezVousRepository extends JpaRepository<RendezVous, Integer>
 
     List<RendezVous> findByDateRendezVous(LocalDate dateRendezVous);
 
-    List<RendezVous> findByClientId(Integer clientId);
+    List<RendezVous> findByUtilisateurId(Integer utilisateurId);
 }

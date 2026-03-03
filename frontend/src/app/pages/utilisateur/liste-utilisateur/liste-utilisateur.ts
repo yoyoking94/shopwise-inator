@@ -5,21 +5,21 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { Client } from '../../../model/client.model';
-import { ClientService } from '../../../core/services/client.service';
+import { Utilisateur } from '../../../model/utilisateur.model';
+import { UtilisateurService } from '../../../core/services/utilisateur.service';
 
 @Component({
-  selector: 'app-liste-clients',
+  selector: 'app-liste-utilisateur',
   imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatCardModule],
-  templateUrl: './liste-clients.html',
-  styleUrl: './liste-clients.scss',
+  templateUrl: './liste-utilisateur.html',
+  styleUrl: './liste-utilisateur.scss',
 })
-export class ListeClients implements OnInit {
-  listeClients: Client[] = [];
+export class ListeUtilisateur implements OnInit {
+  listeUtilisateur: Utilisateur[] = [];
   colonnesAffichees = ['nom', 'email', 'telephone', 'actions'];
 
   constructor(
-    private clientService: ClientService,
+    private UtilisateurService: UtilisateurService,
     private router: Router
   ) { }
 
@@ -28,8 +28,8 @@ export class ListeClients implements OnInit {
   }
 
   chargerClients(): void {
-    this.clientService.recupererTousLesClients().subscribe(clients => {
-      this.listeClients = clients;
+    this.UtilisateurService.recupererTousLesClients().subscribe(utilisateur => {
+      this.listeUtilisateur = utilisateur;
     });
   }
 

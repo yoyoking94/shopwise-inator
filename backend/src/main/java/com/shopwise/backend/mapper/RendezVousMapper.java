@@ -8,10 +8,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface RendezVousMapper {
 
-    @Mapping(source = "client.id", target = "clientId")
+    @Mapping(source = "utilisateur.id", target = "clientId")
     @Mapping(source = "statut", target = "statut")
     RendezVousDTO versDTO(RendezVous rendezVous);
 
-    @Mapping(source = "clientId", target = "client.id")
+    @Mapping(source = "clientId", target = "utilisateur.id")
     RendezVous versEntite(RendezVousDTO rendezVousDTO);
 }

@@ -18,8 +18,8 @@ public class RendezVous {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    @JoinColumn(name = "utilisateur_id", nullable = false)
+    private Utilisateur utilisateur;
 
     @NotNull
     @Column(name = "date_rendez_vous", nullable = false)
