@@ -67,7 +67,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       
       - run: docker build -t yoyoking94/shopwise-backend:latest ./backend
       - run: docker build -t yoyoking94/shopwise-frontend:latest ./frontend
