@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UtilisateurMapper {
 
+    @Mapping(target = "motDePasseTemporaire", ignore = true)
     UtilisateurDTO versDTO(Utilisateur utilisateur);
 
     @Mapping(target = "id", ignore = true)

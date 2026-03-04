@@ -1,23 +1,31 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { EspaceClient } from './espace-client';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
 
 describe('EspaceClient', () => {
-  let component: EspaceClient;
+  let composant: EspaceClient;
   let fixture: ComponentFixture<EspaceClient>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EspaceClient]
-    })
-    .compileComponents();
+      imports: [EspaceClient],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideAnimations(),
+        provideRouter([])
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EspaceClient);
-    component = fixture.componentInstance;
+    composant = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(composant).toBeTruthy();
   });
 });

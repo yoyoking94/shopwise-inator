@@ -62,6 +62,11 @@ export class ListeRendezVous implements OnInit {
     }
   }
 
+  obtenirNomClient(clientId: number): string {
+    const client = this.listeClients.find(client => client.id === clientId);
+    return client ? client.nom : 'Client inconnu';
+  }
+
   reinitialiserFiltres(): void {
     this.filtreStatut = '';
     this.filtreDate = '';

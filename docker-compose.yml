@@ -1,0 +1,52 @@
+services:
+  mysql:
+    build: ./mysql
+    image: yoyoking94/shopwise-mysql:latest
+    container_name: shopwise-mysql
+    restart: unless-stopped
+    command: ["mysqld", "--lower_case_table_names=1", "--default-authentication-plugin=mysql_native_password"]
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: shopwise
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: yoyoking94/shopwise-backend:latest
+    container_name: shopwise-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/shopwise?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Paris
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: yoyoking94/shopwise-frontend:latest
+    container_name: shopwise-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:

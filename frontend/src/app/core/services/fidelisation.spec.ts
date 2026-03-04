@@ -1,16 +1,21 @@
 import { TestBed } from '@angular/core/testing';
-
-import { Fidelisation } from './fidelisation';
+import { FidelisationService } from './fidelisation.service';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('Fidelisation', () => {
-  let service: Fidelisation;
-
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Fidelisation);
+    TestBed.configureTestingModule({
+      providers: [
+        FidelisationService,
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
+    });
   });
 
   it('should be created', () => {
+    const service = TestBed.inject(FidelisationService);
     expect(service).toBeTruthy();
   });
 });
