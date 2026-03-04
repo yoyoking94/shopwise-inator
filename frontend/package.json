@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "test": "ng test",
-    "test:ci": "ng test --configuration=ci --watch=false --code-coverage"
+    "test:ci": "ng test --configuration=ci --watch=false --code-coverage --browsers=ChromeHeadless"
   },
   "prettier": {
     "printWidth": 100,
