@@ -2,9 +2,9 @@ name: Intégration Continue ShopWise
 
 on:
   push:
-    branches: [ main, develop ]  # Trigger sur tes branches
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]  # + PR
+    branches: [ main, develop ]
 
 jobs:
   tests-backend:
@@ -23,7 +23,7 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
       
-      - run: mvn clean verify jacoco:report  # JaCoCo !
+      - run: mvn clean verify jacoco:report
         working-directory: ./backend
       
       - uses: actions/upload-artifact@v4
@@ -35,25 +35,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      
-      - run: npm ci  # + rapide que install
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend
+        run: npm ci
         working-directory: ./frontend
-      
-      - run: npm run test:prod  # Angular coverage
+
+      - name: Run Angular Tests
+        run: npm run test:ci
         working-directory: ./frontend
-      
+
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: coverage-frontend
+          name: angular-coverage-${{ github.run_id }}
           path: frontend/coverage/
+        
 
   docker-build:
     runs-on: ubuntu-latest
-    needs: [tests-backend, tests-frontend]  # Séquentiel
+    needs: [tests-backend, tests-frontend]
     steps:
       - uses: actions/checkout@v4
       
@@ -74,4 +80,4 @@ jobs:
     needs: docker-build
     if: github.ref == 'refs/heads/develop'
     steps:
-      - run: echo "🚀 Déploiement staging OK !"
+      - run: echo "Déploiement staging OK !"
