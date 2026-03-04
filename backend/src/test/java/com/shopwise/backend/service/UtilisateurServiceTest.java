@@ -126,4 +126,17 @@ class UtilisateurServiceTest {
         assertThrows(EntityNotFoundException.class, () -> utilisateurService.mettreAJourClient(99, creationDTO));
     }
 
+    @Test
+    void creerClient_emailDuplique_gereContrainteUnique() {
+        UtilisateurCreationDTO dto = new UtilisateurCreationDTO();
+        dto.setNom("Bob");
+        dto.setEmail("duplicate@email.com");
+
+        when(utilisateurMapper.versEntite(dto)).thenReturn(utilisateur);
+        when(utilisateurRepository.save(any(Utilisateur.class)))
+                .thenThrow(new RuntimeException("Duplicate entry")); // Simule DB unique constraint
+
+        assertThrows(RuntimeException.class, () -> utilisateurService.creerClient(dto));
+    }
+
 }

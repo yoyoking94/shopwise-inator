@@ -98,4 +98,17 @@ class FidelisationServiceTest {
         assertEquals(0, resultat.size());
     }
 
+    @Test
+    void recupererHistoriqueTransactions_avecTransactions_mappeCorrectement() {
+        TransactionFidelite tx = new TransactionFidelite();
+        TransactionFideliteDTO dto = new TransactionFideliteDTO();
+
+        when(transactionFideliteRepository.findByUtilisateurId(1)).thenReturn(List.of(tx));
+        when(transactionFideliteMapper.versDTO(tx)).thenReturn(dto);
+
+        List<TransactionFideliteDTO> resultat = fidelisationService.recupererHistoriqueTransactions(1);
+
+        assertEquals(1, resultat.size());
+        verify(transactionFideliteMapper, times(1)).versDTO(tx); // Couvre mapper
+    }
 }

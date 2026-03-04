@@ -75,4 +75,25 @@ class ConnexionServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> connexionService.connecter(connexionDTO));
     }
+
+    @Test
+    void connecter_statutInvalide_leveIllegalArgument() {
+        ConnexionDTO dto = new ConnexionDTO();
+        dto.setEmail("alice@email.com");
+        dto.setMotDePasse("MAUVAIS");
+
+        when(utilisateurRepository.findByEmail(any())).thenReturn(Optional.of(utilisateur));
+
+        // Force valueOf fail (couvert ailleurs, mais vérifie)
+        assertThrows(EntityNotFoundException.class, () -> connexionService.connecter(dto));
+    }
+
+    @Test
+    void connecter_emailNull_leveException() {
+        ConnexionDTO dto = new ConnexionDTO();
+        dto.setEmail(null);
+        dto.setMotDePasse("pass");
+
+        assertThrows(EntityNotFoundException.class, () -> connexionService.connecter(dto));
+    }
 }

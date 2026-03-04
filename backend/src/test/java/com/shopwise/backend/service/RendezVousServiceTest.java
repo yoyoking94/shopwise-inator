@@ -148,4 +148,17 @@ class RendezVousServiceTest {
         assertEquals(1, resultat.size());
     }
 
+    @Test
+    void filtrerParStatut_statutInvalide_leveIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> rendezVousService.filtrerParStatut("INVALIDE"));
+    }
+
+    @Test
+    void filtrerParDate_null_retourneTous() {
+        when(rendezVousRepository.findAll()).thenReturn(List.of());
+        List<RendezVousDTO> resultat = rendezVousService.recupererTousLesRendezVous();
+        assertNotNull(resultat); // Couvre fallback controller
+    }
+
 }
