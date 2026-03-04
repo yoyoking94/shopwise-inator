@@ -158,7 +158,7 @@ class RendezVousServiceTest {
     void filtrerParDate_null_retourneTous() {
         when(rendezVousRepository.findAll()).thenReturn(List.of());
         List<RendezVousDTO> resultat = rendezVousService.recupererTousLesRendezVous();
-        assertNotNull(resultat); // Couvre fallback controller
+        assertNotNull(resultat);
     }
 
 }

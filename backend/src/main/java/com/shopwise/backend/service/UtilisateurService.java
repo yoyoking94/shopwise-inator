@@ -38,20 +38,17 @@ public class UtilisateurService {
     public UtilisateurDTO creerClient(UtilisateurCreationDTO utilisateurCreationDTO) {
         Utilisateur utilisateur = utilisateurMapper.versEntite(utilisateurCreationDTO);
 
-        // Génération automatique d'un mot de passe temporaire
         String motDePasseTemporaire = UUID.randomUUID().toString().substring(0, 8);
         utilisateur.setMotDePasse(motDePasseTemporaire);
         utilisateur.setRole(RoleUtilisateur.CLIENT);
 
         Utilisateur utilisateurSauvegarde = utilisateurRepository.save(utilisateur);
 
-        // Création automatique du solde de points
         PointsFidelite pointsFidelite = new PointsFidelite();
         pointsFidelite.setUtilisateur(utilisateurSauvegarde);
         pointsFidelite.setSoldePoints(0);
         pointsFideliteRepository.save(pointsFidelite);
 
-        // On retourne le DTO avec le mot de passe temporaire visible UNE seule fois
         UtilisateurDTO utilisateurDTO = utilisateurMapper.versDTO(utilisateurSauvegarde);
         utilisateurDTO.setMotDePasseTemporaire(motDePasseTemporaire);
         return utilisateurDTO;

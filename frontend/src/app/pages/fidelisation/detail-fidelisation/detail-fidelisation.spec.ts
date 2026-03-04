@@ -32,7 +32,7 @@ describe('DetailFidelisation', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              params: { id: 1 } // ← params et non paramMap
+              params: { id: 1 }
             }
           }
         }

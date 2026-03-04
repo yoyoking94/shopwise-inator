@@ -33,7 +33,6 @@ class UtilisateurMapperTest {
         dto.setNom("Alice");
         dto.setEmail("alice@test.com");
         dto.setTelephone("0600000000");
-        // motDePasseTemporaire = null (ignored)
 
         creationDTO = new UtilisateurCreationDTO();
         creationDTO.setNom("Bob");
@@ -45,7 +44,7 @@ class UtilisateurMapperTest {
     void versDTO_ignoreMotDePasseTemporaire() {
         UtilisateurDTO result = mapper.versDTO(utilisateur);
 
-        assertNull(result.getMotDePasseTemporaire()); // Ignoré !
+        assertNull(result.getMotDePasseTemporaire());
         assertEquals("CLIENT", result.getRole());
         assertEquals("alice@test.com", result.getEmail());
     }
@@ -58,12 +57,10 @@ class UtilisateurMapperTest {
 
         Utilisateur result = mapper.versEntite(creationDTO);
 
-        // Vérifie ignores EXPLICITES (pas dateCreation auto)
-        assertNull(result.getId()); // ✅ Ignoré
-        assertNull(result.getMotDePasse()); // ✅ Ignoré
-        assertNull(result.getRole()); // ✅ Ignoré
+        assertNull(result.getId());
+        assertNull(result.getMotDePasse());
+        assertNull(result.getRole());
 
-        // dateCreation = auto NOW → OK, pas assert null
         assertEquals("Bob", result.getNom());
         assertEquals("bob@test.com", result.getEmail());
     }

@@ -134,7 +134,7 @@ class UtilisateurServiceTest {
 
         when(utilisateurMapper.versEntite(dto)).thenReturn(utilisateur);
         when(utilisateurRepository.save(any(Utilisateur.class)))
-                .thenThrow(new RuntimeException("Duplicate entry")); // Simule DB unique constraint
+                .thenThrow(new RuntimeException("Duplicate entry"));
 
         assertThrows(RuntimeException.class, () -> utilisateurService.creerClient(dto));
     }

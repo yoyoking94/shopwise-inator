@@ -84,7 +84,6 @@ class ConnexionServiceTest {
 
         when(utilisateurRepository.findByEmail(any())).thenReturn(Optional.of(utilisateur));
 
-        // Force valueOf fail (couvert ailleurs, mais vérifie)
         assertThrows(EntityNotFoundException.class, () -> connexionService.connecter(dto));
     }
 

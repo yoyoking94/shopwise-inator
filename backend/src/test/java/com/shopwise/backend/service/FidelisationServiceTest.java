@@ -109,6 +109,6 @@ class FidelisationServiceTest {
         List<TransactionFideliteDTO> resultat = fidelisationService.recupererHistoriqueTransactions(1);
 
         assertEquals(1, resultat.size());
-        verify(transactionFideliteMapper, times(1)).versDTO(tx); // Couvre mapper
+        verify(transactionFideliteMapper, times(1)).versDTO(tx);
     }
 }

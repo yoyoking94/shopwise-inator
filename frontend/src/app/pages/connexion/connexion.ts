@@ -26,7 +26,6 @@ export class Connexion implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // Si déjà connecté, on redirige directement
     if (this.connexionService.estConnecte()) {
       this.redirigerSelonRole();
     }
