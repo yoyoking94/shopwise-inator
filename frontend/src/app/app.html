@@ -1,14 +1,14 @@
 <mat-toolbar color="primary">
   <span>ShopWise</span>
   <nav class="navigation">
-    @if (estCommercant()) {
+    @if (estCommercant) {
       <a mat-button routerLink="/clients" routerLinkActive="lien-actif">Clients</a>
       <a mat-button routerLink="/rendez-vous" routerLinkActive="lien-actif">Rendez-vous</a>
     }
-    @if (estClient()) {
+    @if (estClient) {
       <a mat-button routerLink="/mon-espace" routerLinkActive="lien-actif">Mon espace</a>
     }
-    @if (estConnecte()) {
+    @if (estConnecte) {
       <button mat-button (click)="seDeconnecter()">Se déconnecter</button>
     }
   </nav>

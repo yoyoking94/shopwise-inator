@@ -7,7 +7,7 @@
     <form [formGroup]="formulaireRendezVous" (ngSubmit)="soumettre()" class="formulaire">
       <mat-form-field appearance="outline" class="champ-formulaire">
         <mat-label>Client</mat-label>
-        <mat-select formControlName="clientId">
+        <mat-select formControlName="clientId" required>
           @for (client of listeClients; track client.id) {
             <mat-option [value]="client.id">{{ client.nom }}</mat-option>
           }
@@ -28,8 +28,10 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="champ-formulaire">
-        <mat-label>Heure (HH:mm:ss)</mat-label>
-        <input matInput formControlName="heureRendezVous" placeholder="Ex : 10:00:00" />
+        <mat-label>Heure</mat-label>
+        <input matInput [matTimepicker]="selecteurHeure" formControlName="heureRendezVous" />
+        <mat-timepicker-toggle matIconSuffix [for]="selecteurHeure" />
+        <mat-timepicker #selecteurHeure />
         @if (formulaireRendezVous.get('heureRendezVous')?.hasError('required')) {
           <mat-error>L'heure est obligatoire</mat-error>
         }

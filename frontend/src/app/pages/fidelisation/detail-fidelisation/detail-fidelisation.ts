@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -10,6 +10,7 @@ import { TransactionFidelite } from '../../../model/transaction-fidelite.model';
 
 @Component({
   selector: 'app-detail-fidelisation',
+  standalone: true, 
   imports: [CommonModule, MatCardModule, MatButtonModule, MatTableModule, MatIconModule],
   templateUrl: './detail-fidelisation.html',
   styleUrl: './detail-fidelisation.scss',
@@ -23,12 +24,14 @@ export class DetailFidelisation implements OnInit {
   constructor(
     private fidelisationService: FidelisationService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.clientId = this.activatedRoute.snapshot.params['id'];
     this.chargerDonneesFidelisation();
+    this.changeDetectorRef.detectChanges();
   }
 
   chargerDonneesFidelisation(): void {
@@ -38,6 +41,7 @@ export class DetailFidelisation implements OnInit {
 
     this.fidelisationService.recupererHistoriqueTransactions(this.clientId).subscribe(transactions => {
       this.historiqueTransactions = transactions;
+      this.changeDetectorRef.detectChanges();
     });
   }
 

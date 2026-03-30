@@ -19,7 +19,7 @@ public class ConnexionService {
                 .orElseThrow(() -> new EntityNotFoundException("Email ou mot de passe incorrect"));
 
         if (!utilisateur.getMotDePasse().equals(connexionDTO.getMotDePasse())) {
-            throw new EntityNotFoundException("Email ou mot de passe incorrect");
+            throw new IllegalArgumentException("Email ou mot de passe incorrect");
         }
 
         return new ConnexionReponseDTO(

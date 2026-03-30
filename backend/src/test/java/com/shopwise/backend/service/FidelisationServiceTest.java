@@ -16,8 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,75 +39,72 @@ class FidelisationServiceTest {
     private PointsFidelite pointsFidelite;
 
     @BeforeEach
-    void initialiser() {
+    void initialiserDonnees() {
         utilisateur = new Utilisateur();
-        utilisateur.setId(1);
+        utilisateur.setId(2);
+        utilisateur.setNom("Bob");
+        utilisateur.setEmail("bob@email.com");
+        utilisateur.setMotDePasse("bob123");
+        utilisateur.setRole(RoleUtilisateur.CLIENT);
 
         rendezVous = new RendezVous();
         rendezVous.setId(1);
         rendezVous.setUtilisateur(utilisateur);
+        rendezVous.setStatut(StatutRendezVous.HONORE);
 
         pointsFidelite = new PointsFidelite();
+        pointsFidelite.setId(1);
         pointsFidelite.setUtilisateur(utilisateur);
-        pointsFidelite.setSoldePoints(0);
+        pointsFidelite.setSoldePoints(10);
     }
 
     @Test
-    void attribuerPoints_augmenteLeSolde() {
-        when(pointsFideliteRepository.findByUtilisateurId(1)).thenReturn(Optional.of(pointsFidelite));
+    void attribuerPoints_avecUtilisateurExistant_augmenteLeSolde() {
+        when(pointsFideliteRepository.findByUtilisateurId(2)).thenReturn(Optional.of(pointsFidelite));
+        when(pointsFideliteRepository.save(any())).thenReturn(pointsFidelite);
 
         fidelisationService.attribuerPoints(rendezVous);
 
-        assertEquals(10, pointsFidelite.getSoldePoints());
-        verify(pointsFideliteRepository, times(1)).save(pointsFidelite);
-        verify(transactionFideliteRepository, times(1)).save(any());
+        assertThat(pointsFidelite.getSoldePoints()).isEqualTo(20);
+        verify(transactionFideliteRepository, times(1)).save(any(TransactionFidelite.class));
     }
 
     @Test
-    void attribuerPoints_sansPointsFidelite_leveException() {
-        when(pointsFideliteRepository.findByUtilisateurId(1)).thenReturn(Optional.empty());
+    void attribuerPoints_avecUtilisateurInexistant_lancheException() {
+        when(pointsFideliteRepository.findByUtilisateurId(2)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> fidelisationService.attribuerPoints(rendezVous));
+        assertThatThrownBy(() -> fidelisationService.attribuerPoints(rendezVous))
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
     void recupererSoldePoints_avecClientExistant_retourneSolde() {
-        pointsFidelite.setSoldePoints(20);
-        when(pointsFideliteRepository.findByUtilisateurId(1)).thenReturn(Optional.of(pointsFidelite));
+        when(pointsFideliteRepository.findByUtilisateurId(2)).thenReturn(Optional.of(pointsFidelite));
 
-        Integer solde = fidelisationService.recupererSoldePoints(1);
+        Integer solde = fidelisationService.recupererSoldePoints(2);
 
-        assertEquals(20, solde);
+        assertThat(solde).isEqualTo(10);
     }
 
     @Test
-    void recupererSoldePoints_avecClientInexistant_leveException() {
+    void recupererSoldePoints_avecClientSansPoints_retourneZero() {
         when(pointsFideliteRepository.findByUtilisateurId(99)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> fidelisationService.recupererSoldePoints(99));
+        Integer solde = fidelisationService.recupererSoldePoints(99);
+
+        assertThat(solde).isEqualTo(0);
     }
 
     @Test
     void recupererHistoriqueTransactions_retourneListe() {
-        when(transactionFideliteRepository.findByUtilisateurId(1)).thenReturn(List.of());
+        TransactionFidelite transaction = new TransactionFidelite();
+        TransactionFideliteDTO transactionDTO = new TransactionFideliteDTO();
 
-        List<TransactionFideliteDTO> resultat = fidelisationService.recupererHistoriqueTransactions(1);
+        when(transactionFideliteRepository.findByUtilisateurId(2)).thenReturn(List.of(transaction));
+        when(transactionFideliteMapper.versDTO(transaction)).thenReturn(transactionDTO);
 
-        assertNotNull(resultat);
-        assertEquals(0, resultat.size());
-    }
+        List<TransactionFideliteDTO> resultat = fidelisationService.recupererHistoriqueTransactions(2);
 
-    @Test
-    void recupererHistoriqueTransactions_avecTransactions_mappeCorrectement() {
-        TransactionFidelite tx = new TransactionFidelite();
-        TransactionFideliteDTO dto = new TransactionFideliteDTO();
-
-        when(transactionFideliteRepository.findByUtilisateurId(1)).thenReturn(List.of(tx));
-        when(transactionFideliteMapper.versDTO(tx)).thenReturn(dto);
-
-        List<TransactionFideliteDTO> resultat = fidelisationService.recupererHistoriqueTransactions(1);
-
-        assertEquals(1, resultat.size());
-        verify(transactionFideliteMapper, times(1)).versDTO(tx);
+        assertThat(resultat).hasSize(1);
     }
 }

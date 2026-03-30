@@ -1,22 +1,11 @@
-# Build stage : création du JAR
-FROM eclipse-temurin:17-jdk-jammy AS builder
-
-WORKDIR /build
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
-COPY src src/
-
-RUN ./mvnw package -DskipTests
-
-# Run stage : image épurée pour lancement
-FROM eclipse-temurin:17-jre-jammy
+FROM maven:3.9-eclipse-temurin-21 AS etape-compilation
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Ajoute le JAR généré depuis le build précédent
-COPY --from=builder /build/target/*.jar app.jar
-
-# Pour éviter problème locale/timezone si besoin :
-ENV TZ=Europe/Paris
-
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=etape-compilation /app/target/*.jar application.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "application.jar"]

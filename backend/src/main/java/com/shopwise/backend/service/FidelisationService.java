@@ -40,9 +40,8 @@ public class FidelisationService {
 
     public Integer recupererSoldePoints(Integer clientId) {
         return pointsFideliteRepository.findByUtilisateurId(clientId)
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Points fidélité introuvables pour le client : " + clientId))
-                .getSoldePoints();
+                .map(PointsFidelite::getSoldePoints)
+                .orElse(0);
     }
 
     public List<TransactionFideliteDTO> recupererHistoriqueTransactions(Integer clientId) {

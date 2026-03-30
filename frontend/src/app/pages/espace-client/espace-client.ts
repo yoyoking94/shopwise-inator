@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatDividerModule } from "@angular/material/divider";
@@ -15,6 +15,7 @@ import { Utilisateur } from "../../model/utilisateur.model";
 
 @Component({
   selector: 'app-espace-client',
+  standalone: true,
   imports: [CommonModule, MatCardModule, MatButtonModule, MatTableModule, MatIconModule, MatDividerModule],
   templateUrl: './espace-client.html',
   styleUrl: './espace-client.scss',
@@ -30,7 +31,8 @@ export class EspaceClient implements OnInit {
     private connexionService: ConnexionService,
     private fidelisationService: FidelisationService,
     private utilisateurService: UtilisateurService,
-    private router: Router
+    private router: Router,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -43,14 +45,17 @@ export class EspaceClient implements OnInit {
 
     this.utilisateurService.recupererUtilisateurParId(utilisateurConnecte.id).subscribe(infos => {
       this.utilisateur = infos;
+      this.changeDetectorRef.detectChanges();
     });
 
-    this.fidelisationService.recupererSoldePoints(utilisateurConnecte.id).subscribe(solde => {
-      this.soldePoints = solde;
+    this.fidelisationService.recupererSoldePoints(utilisateurConnecte.id).subscribe({
+      next: (solde) => { this.soldePoints = solde; this.changeDetectorRef.detectChanges(); },
+      error: (err) => console.error('Erreur solde:', err)
     });
 
     this.fidelisationService.recupererHistoriqueTransactions(utilisateurConnecte.id).subscribe(transactions => {
       this.historiqueTransactions = transactions;
+      this.changeDetectorRef.detectChanges();
     });
   }
 

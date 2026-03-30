@@ -38,6 +38,6 @@ export class RendezVousService {
 
   changerStatut(id: number, statut: string): Observable<RendezVous> {
     const parametres = new HttpParams().set('statut', statut);
-    return this.httpClient.patch<RendezVous>(`${this.urlApi}/${id}/statut`, null, { params: parametres });
+    return this.httpClient.patch<RendezVous>(`${this.urlApi}/${id}/statut`, {}, { params: parametres });
   }
 }

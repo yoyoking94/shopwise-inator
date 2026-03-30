@@ -6,11 +6,10 @@ import lombok.Data;
 
 @Data
 public class ConnexionDTO {
-
-    @Email
-    @NotBlank
+    @Email(message = "Email invalide")
+    @NotBlank(message = "Email obligatoire")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Mot de passe obligatoire")
     private String motDePasse;
 }

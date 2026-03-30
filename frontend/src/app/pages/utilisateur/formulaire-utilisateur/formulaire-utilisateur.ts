@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -10,6 +10,7 @@ import { UtilisateurService } from '../../../core/services/utilisateur.service';
 
 @Component({
   selector: 'app-formulaire-client',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule],
   templateUrl: './formulaire-utilisateur.html',
   styleUrl: './formulaire-utilisateur.scss',
@@ -23,7 +24,8 @@ export class FormulaireUtilisateur implements OnInit {
     private formBuilder: FormBuilder,
     private utilisateurService: UtilisateurService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -40,6 +42,8 @@ export class FormulaireUtilisateur implements OnInit {
         this.formulaireUtilisateur.patchValue(utilisateur);
       });
     }
+
+    this.changeDetectorRef.detectChanges();
   }
 
   soumettre(): void {

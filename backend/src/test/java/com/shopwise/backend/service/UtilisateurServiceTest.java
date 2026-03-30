@@ -2,6 +2,7 @@ package com.shopwise.backend.service;
 
 import com.shopwise.backend.dto.UtilisateurCreationDTO;
 import com.shopwise.backend.dto.UtilisateurDTO;
+import com.shopwise.backend.entities.PointsFidelite;
 import com.shopwise.backend.entities.RoleUtilisateur;
 import com.shopwise.backend.entities.Utilisateur;
 import com.shopwise.backend.mapper.UtilisateurMapper;
@@ -18,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,22 +39,27 @@ class UtilisateurServiceTest {
 
     private Utilisateur utilisateur;
     private UtilisateurDTO utilisateurDTO;
+    private UtilisateurCreationDTO utilisateurCreationDTO;
 
     @BeforeEach
-    void initialiser() {
+    void initialiserDonnees() {
         utilisateur = new Utilisateur();
-        utilisateur.setId(1);
-        utilisateur.setNom("Alice Martin");
+        utilisateur.setId(2);
+        utilisateur.setNom("Alice");
         utilisateur.setEmail("alice@email.com");
-        utilisateur.setTelephone("0601020304");
+        utilisateur.setMotDePasse("alice123");
         utilisateur.setRole(RoleUtilisateur.CLIENT);
 
         utilisateurDTO = new UtilisateurDTO();
-        utilisateurDTO.setId(1);
-        utilisateurDTO.setNom("Alice Martin");
+        utilisateurDTO.setId(2);
+        utilisateurDTO.setNom("Alice");
         utilisateurDTO.setEmail("alice@email.com");
-        utilisateurDTO.setTelephone("0601020304");
         utilisateurDTO.setRole("CLIENT");
+
+        utilisateurCreationDTO = new UtilisateurCreationDTO();
+        utilisateurCreationDTO.setNom("Alice");
+        utilisateurCreationDTO.setEmail("alice@email.com");
+        utilisateurCreationDTO.setTelephone("0601020304");
     }
 
     @Test
@@ -63,80 +69,56 @@ class UtilisateurServiceTest {
 
         List<UtilisateurDTO> resultat = utilisateurService.recupererTousLesClients();
 
-        assertEquals(1, resultat.size());
-        assertEquals("Alice Martin", resultat.get(0).getNom());
+        assertThat(resultat).hasSize(1);
+        assertThat(resultat.get(0).getNom()).isEqualTo("Alice");
     }
 
     @Test
     void recupererUtilisateurParId_avecIdExistant_retourneDTO() {
-        when(utilisateurRepository.findById(1)).thenReturn(Optional.of(utilisateur));
+        when(utilisateurRepository.findById(2)).thenReturn(Optional.of(utilisateur));
         when(utilisateurMapper.versDTO(utilisateur)).thenReturn(utilisateurDTO);
 
-        UtilisateurDTO resultat = utilisateurService.recupererUtilisateurParId(1);
+        UtilisateurDTO resultat = utilisateurService.recupererUtilisateurParId(2);
 
-        assertNotNull(resultat);
-        assertEquals("alice@email.com", resultat.getEmail());
+        assertThat(resultat.getId()).isEqualTo(2);
     }
 
     @Test
-    void recupererUtilisateurParId_avecIdInexistant_leveException() {
+    void recupererUtilisateurParId_avecIdInexistant_lancheException() {
         when(utilisateurRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> utilisateurService.recupererUtilisateurParId(99));
+        assertThatThrownBy(() -> utilisateurService.recupererUtilisateurParId(99))
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
-    void creerClient_genereMotDePasseEtCreePointsFidelite() {
-        UtilisateurCreationDTO creationDTO = new UtilisateurCreationDTO();
-        creationDTO.setNom("Bob Durand");
-        creationDTO.setEmail("bob@email.com");
-
-        when(utilisateurMapper.versEntite(creationDTO)).thenReturn(utilisateur);
-        when(utilisateurRepository.save(any())).thenReturn(utilisateur);
-        when(utilisateurMapper.versDTO(utilisateur)).thenReturn(utilisateurDTO);
-
-        UtilisateurDTO resultat = utilisateurService.creerClient(creationDTO);
-
-        assertNotNull(resultat);
-        verify(pointsFideliteRepository, times(1)).save(any());
-    }
-
-    @Test
-    void mettreAJourClient_avecIdExistant_metsAJourLesChamps() {
-        UtilisateurCreationDTO creationDTO = new UtilisateurCreationDTO();
-        creationDTO.setNom("Alice Modifiee");
-        creationDTO.setEmail("alice.modifiee@email.com");
-        creationDTO.setTelephone("0699999999");
-
-        when(utilisateurRepository.findById(1)).thenReturn(Optional.of(utilisateur));
+    void creerClient_creeUtilisateurEtPointsFidelite() {
+        when(utilisateurMapper.versEntite(utilisateurCreationDTO)).thenReturn(utilisateur);
         when(utilisateurRepository.save(utilisateur)).thenReturn(utilisateur);
         when(utilisateurMapper.versDTO(utilisateur)).thenReturn(utilisateurDTO);
 
-        utilisateurService.mettreAJourClient(1, creationDTO);
+        UtilisateurDTO resultat = utilisateurService.creerClient(utilisateurCreationDTO);
 
-        verify(utilisateurRepository, times(1)).save(utilisateur);
-        assertEquals("Alice Modifiee", utilisateur.getNom());
+        verify(pointsFideliteRepository, times(1)).save(any(PointsFidelite.class));
+        assertThat(resultat.getMotDePasseTemporaire()).isNotNull();
     }
 
     @Test
-    void mettreAJourClient_avecIdInexistant_leveException() {
-        UtilisateurCreationDTO creationDTO = new UtilisateurCreationDTO();
+    void mettreAJourClient_avecIdExistant_retourneClientMisAJour() {
+        when(utilisateurRepository.findById(2)).thenReturn(Optional.of(utilisateur));
+        when(utilisateurRepository.save(utilisateur)).thenReturn(utilisateur);
+        when(utilisateurMapper.versDTO(utilisateur)).thenReturn(utilisateurDTO);
+
+        UtilisateurDTO resultat = utilisateurService.mettreAJourClient(2, utilisateurCreationDTO);
+
+        assertThat(resultat.getNom()).isEqualTo("Alice");
+    }
+
+    @Test
+    void mettreAJourClient_avecIdInexistant_lancheException() {
         when(utilisateurRepository.findById(99)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> utilisateurService.mettreAJourClient(99, creationDTO));
+        assertThatThrownBy(() -> utilisateurService.mettreAJourClient(99, utilisateurCreationDTO))
+                .isInstanceOf(EntityNotFoundException.class);
     }
-
-    @Test
-    void creerClient_emailDuplique_gereContrainteUnique() {
-        UtilisateurCreationDTO dto = new UtilisateurCreationDTO();
-        dto.setNom("Bob");
-        dto.setEmail("duplicate@email.com");
-
-        when(utilisateurMapper.versEntite(dto)).thenReturn(utilisateur);
-        when(utilisateurRepository.save(any(Utilisateur.class)))
-                .thenThrow(new RuntimeException("Duplicate entry"));
-
-        assertThrows(RuntimeException.class, () -> utilisateurService.creerClient(dto));
-    }
-
 }

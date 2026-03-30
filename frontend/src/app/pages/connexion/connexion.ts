@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-connexion',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule, MatIconModule],
   templateUrl: './connexion.html',
   styleUrl: './connexion.scss',

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
@@ -10,6 +10,7 @@ import { UtilisateurService } from '../../../core/services/utilisateur.service';
 
 @Component({
   selector: 'app-liste-utilisateur',
+  standalone: true,
   imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatCardModule],
   templateUrl: './liste-utilisateur.html',
   styleUrl: './liste-utilisateur.scss',
@@ -20,7 +21,8 @@ export class ListeUtilisateur implements OnInit {
 
   constructor(
     private UtilisateurService: UtilisateurService,
-    private router: Router
+    private router: Router,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -28,8 +30,12 @@ export class ListeUtilisateur implements OnInit {
   }
 
   chargerClients(): void {
-    this.UtilisateurService.recupererTousLesClients().subscribe(utilisateur => {
-      this.listeUtilisateur = utilisateur;
+    this.UtilisateurService.recupererTousLesClients().subscribe({
+      next: (utilisateur) => {
+        this.listeUtilisateur = utilisateur;
+        this.changeDetectorRef.detectChanges();
+      },
+      error: (err) => console.error('Erreur clients:', err)
     });
   }
 

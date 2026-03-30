@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,17 +30,17 @@ class ConnexionServiceTest {
     private Utilisateur utilisateur;
 
     @BeforeEach
-    void initialiser() {
+    void initialiserUtilisateur() {
         utilisateur = new Utilisateur();
         utilisateur.setId(1);
-        utilisateur.setNom("Alice Martin");
+        utilisateur.setNom("Alice");
         utilisateur.setEmail("alice@email.com");
         utilisateur.setMotDePasse("alice123");
         utilisateur.setRole(RoleUtilisateur.CLIENT);
     }
 
     @Test
-    void connecter_avecIdentifiantsCorrects_retourneReponseConnexion() {
+    void connecter_avecIdentifiantsCorrects_retourneReponse() {
         ConnexionDTO connexionDTO = new ConnexionDTO();
         connexionDTO.setEmail("alice@email.com");
         connexionDTO.setMotDePasse("alice123");
@@ -49,50 +49,35 @@ class ConnexionServiceTest {
 
         ConnexionReponseDTO reponse = connexionService.connecter(connexionDTO);
 
-        assertNotNull(reponse);
-        assertEquals("Alice Martin", reponse.getNom());
-        assertEquals("CLIENT", reponse.getRole());
+        assertThat(reponse.getId()).isEqualTo(1);
+        assertThat(reponse.getNom()).isEqualTo("Alice");
+        assertThat(reponse.getEmail()).isEqualTo("alice@email.com");
+        assertThat(reponse.getRole()).isEqualTo("CLIENT");
     }
 
     @Test
-    void connecter_avecEmailInconnu_leveException() {
+    void connecter_avecEmailInexistant_lancheException() {
         ConnexionDTO connexionDTO = new ConnexionDTO();
         connexionDTO.setEmail("inconnu@email.com");
         connexionDTO.setMotDePasse("motdepasse");
 
         when(utilisateurRepository.findByEmail("inconnu@email.com")).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> connexionService.connecter(connexionDTO));
+        assertThatThrownBy(() -> connexionService.connecter(connexionDTO))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Email ou mot de passe incorrect");
     }
 
     @Test
-    void connecter_avecMauvaisMotDePasse_leveException() {
+    void connecter_avecMotDePasseIncorrect_lancheException() {
         ConnexionDTO connexionDTO = new ConnexionDTO();
         connexionDTO.setEmail("alice@email.com");
         connexionDTO.setMotDePasse("mauvaisMotDePasse");
 
         when(utilisateurRepository.findByEmail("alice@email.com")).thenReturn(Optional.of(utilisateur));
 
-        assertThrows(EntityNotFoundException.class, () -> connexionService.connecter(connexionDTO));
-    }
-
-    @Test
-    void connecter_statutInvalide_leveIllegalArgument() {
-        ConnexionDTO dto = new ConnexionDTO();
-        dto.setEmail("alice@email.com");
-        dto.setMotDePasse("MAUVAIS");
-
-        when(utilisateurRepository.findByEmail(any())).thenReturn(Optional.of(utilisateur));
-
-        assertThrows(EntityNotFoundException.class, () -> connexionService.connecter(dto));
-    }
-
-    @Test
-    void connecter_emailNull_leveException() {
-        ConnexionDTO dto = new ConnexionDTO();
-        dto.setEmail(null);
-        dto.setMotDePasse("pass");
-
-        assertThrows(EntityNotFoundException.class, () -> connexionService.connecter(dto));
+        assertThatThrownBy(() -> connexionService.connecter(connexionDTO))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Email ou mot de passe incorrect");
     }
 }

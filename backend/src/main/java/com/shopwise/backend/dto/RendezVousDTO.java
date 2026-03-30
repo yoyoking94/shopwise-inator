@@ -10,16 +10,16 @@ import java.time.LocalTime;
 public class RendezVousDTO {
     private Integer id;
 
-    @NotNull
+    @NotNull(message = "Client obligatoire")
     private Integer clientId;
 
-    @NotNull
+    @NotNull(message = "Date obligatoire")
     private LocalDate dateRendezVous;
 
-    @NotNull
+    @NotNull(message = "Heure obligatoire")
     private LocalTime heureRendezVous;
 
-    @NotBlank
+    @NotBlank(message = "Service obligatoire")
     private String service;
 
     private String statut;

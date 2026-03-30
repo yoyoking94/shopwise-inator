@@ -3,8 +3,11 @@ package com.shopwise.backend.service;
 import com.shopwise.backend.dto.RendezVousDTO;
 import com.shopwise.backend.entities.RendezVous;
 import com.shopwise.backend.entities.StatutRendezVous;
+import com.shopwise.backend.entities.Utilisateur;
 import com.shopwise.backend.mapper.RendezVousMapper;
 import com.shopwise.backend.repository.RendezVousRepository;
+import com.shopwise.backend.repository.UtilisateurRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ public class RendezVousService {
     private final RendezVousRepository rendezVousRepository;
     private final RendezVousMapper rendezVousMapper;
     private final FidelisationService fidelisationService;
+    private final UtilisateurRepository utilisateurRepository;
 
     public List<RendezVousDTO> recupererTousLesRendezVous() {
         return rendezVousRepository.findAll()
@@ -49,7 +53,12 @@ public class RendezVousService {
     }
 
     public RendezVousDTO creerRendezVous(RendezVousDTO rendezVousDTO) {
+        Utilisateur utilisateur = utilisateurRepository.findById(rendezVousDTO.getClientId())
+                .orElseThrow(() -> new EntityNotFoundException("Client introuvable : " + rendezVousDTO.getClientId()));
+
         RendezVous rendezVous = rendezVousMapper.versEntite(rendezVousDTO);
+        rendezVous.setUtilisateur(utilisateur);
+
         return rendezVousMapper.versDTO(rendezVousRepository.save(rendezVous));
     }
 
@@ -57,14 +66,19 @@ public class RendezVousService {
         RendezVous rendezVous = rendezVousRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Rendez-vous introuvable avec l'id : " + id));
 
-        StatutRendezVous statutEnum = StatutRendezVous.valueOf(nouveauStatut.toUpperCase());
-        rendezVous.setStatut(statutEnum);
-        RendezVous rendezVousSauvegarde = rendezVousRepository.save(rendezVous);
+        StatutRendezVous ancienStatut = rendezVous.getStatut();
 
-        if (statutEnum == StatutRendezVous.HONORE) {
-            fidelisationService.attribuerPoints(rendezVousSauvegarde);
+        try {
+            StatutRendezVous statutEnum = StatutRendezVous.valueOf(nouveauStatut.toUpperCase());
+            rendezVous.setStatut(statutEnum);
+            RendezVous rendezVousSauvegarde = rendezVousRepository.save(rendezVous);
+
+            if (ancienStatut != StatutRendezVous.HONORE && statutEnum == StatutRendezVous.HONORE) {
+                fidelisationService.attribuerPoints(rendezVousSauvegarde);
+            }
+            return rendezVousMapper.versDTO(rendezVousSauvegarde);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Statut invalide : " + nouveauStatut);
         }
-
-        return rendezVousMapper.versDTO(rendezVousSauvegarde);
     }
 }
