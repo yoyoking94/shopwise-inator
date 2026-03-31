@@ -6,19 +6,24 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
+import { TransactionFidelite } from '../../../model/transaction-fidelite.model';
 
 describe('DetailFidelisation', () => {
   let composant: DetailFidelisation;
   let fixture: ComponentFixture<DetailFidelisation>;
   let fidelisationServiceSpy: jasmine.SpyObj<FidelisationService>;
 
+  const transactionsSimulees: TransactionFidelite[] = [
+    { id: 1, clientId: 1, rendezVousId: 10, pointsAttribues: 50, dateTransaction: '2025-01-01' }
+  ];
+
   beforeEach(async () => {
     fidelisationServiceSpy = jasmine.createSpyObj('FidelisationService', [
       'recupererSoldePoints',
       'recupererHistoriqueTransactions'
     ]);
-    fidelisationServiceSpy.recupererSoldePoints.and.returnValue(of(0));
-    fidelisationServiceSpy.recupererHistoriqueTransactions.and.returnValue(of([]));
+    fidelisationServiceSpy.recupererSoldePoints.and.returnValue(of(150));
+    fidelisationServiceSpy.recupererHistoriqueTransactions.and.returnValue(of(transactionsSimulees));
 
     await TestBed.configureTestingModule({
       imports: [DetailFidelisation],
@@ -30,11 +35,7 @@ describe('DetailFidelisation', () => {
         { provide: FidelisationService, useValue: fidelisationServiceSpy },
         {
           provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              params: { id: 1 }
-            }
-          }
+          useValue: { snapshot: { params: { id: 1 } } }
         }
       ]
     }).compileComponents();
@@ -48,11 +49,24 @@ describe('DetailFidelisation', () => {
     expect(composant).toBeTruthy();
   });
 
-  it('retourVersClients navigue vers /clients', () => {
-    const routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    spyOn(routerSpy, 'navigate');
-    composant.retourVersClients();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/clients']);
+  it('ngOnInit charge le clientId depuis la route', () => {
+    expect(composant.clientId).toBe(1);
   });
 
+  it('chargerDonneesFidelisation charge le solde de points', () => {
+    expect(fidelisationServiceSpy.recupererSoldePoints).toHaveBeenCalledWith(1);
+    expect(composant.soldePoints).toBe(150);
+  });
+
+  it('chargerDonneesFidelisation charge l\'historique des transactions', () => {
+    expect(fidelisationServiceSpy.recupererHistoriqueTransactions).toHaveBeenCalledWith(1);
+    expect(composant.historiqueTransactions).toEqual(transactionsSimulees);
+  });
+
+  it('retourVersClients navigue vers /clients', () => {
+    const router = TestBed.inject(Router);
+    spyOn(router, 'navigate');
+    composant.retourVersClients();
+    expect(router.navigate).toHaveBeenCalledWith(['/clients']);
+  });
 });
